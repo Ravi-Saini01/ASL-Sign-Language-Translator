@@ -33,5 +33,5 @@ st.markdown("""
 - delete  
 - nothing  
 
-**Noteee:** This system supports **static ASL gestures only**.
+**Note:** This system supports **static ASL gestures only**.
 """)
