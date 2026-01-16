@@ -12,10 +12,10 @@ CHART_PATH = "asl_chart.jpg"   # optional
 
 IMG_SIZE = 64
 CONFIDENCE_THRESHOLD = 0.80
-BUFFER_SIZE = 15               # majority voting frames
+BUFFER_SIZE = 15
 # =========================================
 
-# -------- Windows built-in Text-to-Speech (NO extra installs) --------
+# -------- Windows built-in Text-to-Speech --------
 def speak(text):
     os.system(
         f'powershell -Command "Add-Type -AssemblyName System.Speech; '
@@ -30,10 +30,10 @@ with open(LABEL_PATH, "r") as f:
 
 labels = {v: k for k, v in class_indices.items()}
 
-# ---------------- Load ASL chart (optional) ----------------
+# ---------------- Load chart (optional) ----------------
 chart_img = cv2.imread(CHART_PATH)
 if chart_img is not None:
-    chart_img = cv2.resize(chart_img, (400, 500))
+    chart_img = cv2.resize(chart_img, (380, 500))
 
 # ---------------- Helper ----------------
 def get_stable_label(buffer):
@@ -47,12 +47,13 @@ cap = cv2.VideoCapture(0)
 prediction_buffer = deque(maxlen=BUFFER_SIZE)
 current_text = ""
 
-print("====================================")
-print(" SPACE     -> Add detected character")
-print(" BACKSPACE -> Delete character")
-print(" S         -> Speak text")
-print(" ESC       -> Exit")
-print("====================================")
+# ---------------- UI Colors ----------------
+BG_COLOR = (30, 30, 30)
+GREEN = (0, 255, 0)
+CYAN = (255, 255, 0)
+YELLOW = (0, 255, 255)
+WHITE = (255, 255, 255)
+RED = (0, 0, 255)
 
 while True:
     ret, frame = cap.read()
@@ -60,10 +61,18 @@ while True:
         break
 
     frame = cv2.flip(frame, 1)
+    frame = cv2.resize(frame, (600, 500))
+
+    # Background overlay
+    overlay = frame.copy()
+    cv2.rectangle(overlay, (0, 0), (600, 500), BG_COLOR, -1)
+    frame = cv2.addWeighted(overlay, 0.25, frame, 0.75, 0)
 
     # -------- ROI --------
-    roi = frame[50:300, 50:300]
-    cv2.rectangle(frame, (50, 50), (300, 300), (0, 255, 0), 2)
+    roi = frame[70:320, 40:290]
+    cv2.rectangle(frame, (40, 70), (290, 320), GREEN, 2)
+    cv2.putText(frame, "Hand Area", (40, 60),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, GREEN, 2)
 
     roi_resized = cv2.resize(roi, (IMG_SIZE, IMG_SIZE))
     roi_norm = roi_resized / 255.0
@@ -79,42 +88,55 @@ while True:
 
     stable_label = get_stable_label(prediction_buffer)
 
-    # -------- Display --------
-    cv2.putText(frame, f"Detected: {stable_label}", (30, 40),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    # -------- UI Panels --------
+    # Detected Letter Panel
+    cv2.rectangle(frame, (330, 70), (580, 140), (50, 50, 50), -1)
+    cv2.putText(frame, "Detected", (340, 95),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, WHITE, 1)
+    cv2.putText(frame, stable_label if stable_label else "-",
+                (360, 130),
+                cv2.FONT_HERSHEY_SIMPLEX, 1.5, GREEN, 3)
 
-    cv2.putText(frame, f"Text: {current_text}", (30, 360),
-                cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255, 255, 0), 3)
+    # Typed Text Panel
+    cv2.rectangle(frame, (40, 350), (580, 430), (50, 50, 50), -1)
+    cv2.putText(frame, "Typed Text", (50, 375),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, WHITE, 1)
+    cv2.putText(frame, current_text[-20:], (50, 415),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, YELLOW, 2)
 
+    # Instruction Bar
+    cv2.rectangle(frame, (0, 460), (600, 500), (0, 0, 0), -1)
     cv2.putText(frame,
-                "SPACE=Add | BACKSPACE=Delete | S=Speak | ESC=Exit",
-                (30, 420),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+        "SPACE:Add Letter   BACKSPACE:Delete   S:Speak   ESC:Exit",
+        (20, 490),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.5,
+        CYAN,
+        1
+    )
 
-    frame_resized = cv2.resize(frame, (600, 500))
-    combined = np.hstack((frame_resized, chart_img)) if chart_img is not None else frame_resized
+    # -------- Combine with Chart --------
+    if chart_img is not None:
+        combined = np.hstack((frame, chart_img))
+    else:
+        combined = frame
 
-    cv2.imshow("ASL Text Builder", combined)
+    cv2.imshow("ASL Translator", combined)
 
     key = cv2.waitKey(1) & 0xFF
 
-    # -------- Keyboard Controls --------
-
-    # SPACEBAR → add detected character
-    if key == 32:
+    # -------- Controls --------
+    if key == 32:  # SPACEBAR
         if stable_label not in ["", "nothing", "space", "del"]:
             current_text += stable_label
-            prediction_buffer.clear()  # prevent duplicate capture
+            prediction_buffer.clear()
 
-    # BACKSPACE → delete last character
-    elif key == 8:
+    elif key == 8:  # BACKSPACE
         current_text = current_text[:-1]
 
-    # S → speak full text
     elif key == ord('s') and current_text.strip():
         speak(current_text)
 
-    # ESC → exit
     elif key == 27:
         break
 
