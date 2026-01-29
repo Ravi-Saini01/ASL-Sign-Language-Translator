@@ -59,7 +59,7 @@ Type: Static ASL gestures
 https://www.kaggle.com/datasets/grassknoted/asl-alphabet
 
 <h1>🏗 Project Structure</h1>
-
+<pre>
 ASL-Sign-Language-Translator/<br>
 │
 ├── dataset/<br>
@@ -76,7 +76,7 @@ ASL-Sign-Language-Translator/<br>
 ├── app.py<br>
 ├── requirements.txt<br>
 └── README.md<br>
-
+</pre>
 <h1>⚙️ Technologies Used</h1>
 
 Python
@@ -95,10 +95,10 @@ Windows Speech API (Text-to-Speech)
 <pre>
 <b>Key</b>	                    <b>Action</b>
 
-<b>SPACEBAR</b>	                Add detected ASL character<br>
+<b>SPACEBAR</b>	            Add detected ASL character<br>
 <b>BACKSPACE</b>	            Delete previous character<br>
-<b>S</b>	                    Speak the full sentence<br>
-<b>ESC</b>	                    Exit camera window<br>
+<b>S</b>	                     Speak the full sentence<br>
+<b>ESC</b>	                  Exit camera window<br>
 </pre>
 
 👉 Characters are added only when SPACEBAR is pressed to avoid accidental input.
