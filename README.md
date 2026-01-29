@@ -60,22 +60,22 @@ https://www.kaggle.com/datasets/grassknoted/asl-alphabet
 
 <h1>🏗 Project Structure</h1>
 
-ASL-Sign-Language-Translator/
+ASL-Sign-Language-Translator/<br>
 │
-├── dataset/
-│   └── asl_alphabet/
+├── dataset/<br>
+│   └── asl_alphabet/<br>
 │
-├── models/
-│   ├── asl_cnn_model.h5
-│   └── labels.json
+├── models/<br>
+│   ├── asl_cnn_model.h5<br>
+│   └── labels.json<br>
 │
-├── scripts/
-│   └── predict_realtime.py
+├── scripts/<br>
+│   └── predict_realtime.py<br>
 │
-├── asl_chart.jpg
-├── app.py
-├── requirements.txt
-└── README.md
+├── asl_chart.jpg<br>
+├── app.py<br>
+├── requirements.txt<br>
+└── README.md<br>
 
 <h1>⚙️ Technologies Used</h1>
 
@@ -92,13 +92,14 @@ Streamlit
 Windows Speech API (Text-to-Speech)
 
 <h1>⌨️ Controls & Usage</h1>
-
+<pre>
 <b>Key</b>	                    <b>Action</b>
 
-<b>SPACEBAR</b>	                Add detected ASL character<>
-<b>BACKSPACE</b>	            Delete previous character
-<b>S</b>	                    Speak the full sentence
-<b>ESC</b>	                    Exit camera window
+<b>SPACEBAR</b>	                Add detected ASL character<br>
+<b>BACKSPACE</b>	            Delete previous character<br>
+<b>S</b>	                    Speak the full sentence<br>
+<b>ESC</b>	                    Exit camera window<br>
+</pre>
 
 👉 Characters are added only when SPACEBAR is pressed to avoid accidental input.
 
@@ -108,9 +109,9 @@ Windows Speech API (Text-to-Speech)
 pip install -r requirements.txt
 
 <h2>2️⃣ Ensure Model Files Exist</h2>
-models/
-├── asl_cnn_model.h5
-└── labels.json
+models/<br>
+├── asl_cnn_model.h5<br>
+└── labels.json<br>
 
 <h2>3️⃣ Run the Application</h2>
 streamlit run app.py
